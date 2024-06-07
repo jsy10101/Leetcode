@@ -13,13 +13,26 @@ if [ -z "$unstaged_files" ]; then
 fi
 
 for filename in $unstaged_files; do
-  read -p "Do you want to commit the file '${filename}'? (y/n): " choice
+  read -p "Do you want to commit the file '${filename}' and then push it? (y/n): " choice
   case "$choice" in 
     y|Y )
+      echo
+      echo "Adding file to staging and committing it locally..."
+      echo "------------------------------------------------"
+      echo
       git add "$filename"
       git commit -m "add ${filename}"
 
-      echo "File '${filename}' has been added and committed."
+      echo
+      echo "File '${filename}' has been added and committed locally."
+      echo "------------------------------------------------"
+      echo "Pushing the file to GitHub now..."
+      echo
+      
+      git push
+
+      echo "------------------------------------------------"
+      echo "Success!!!"
       ;;
     n|N )
       echo "File '${filename}' has not been committed."
