@@ -1,4 +1,5 @@
-// Online solution
+// Time: O(n + e)
+// Space: O(n)
 class Solution {
 public:
     vector<int> findSmallestSetOfVertices(int n, vector<vector<int>>& edges) {
