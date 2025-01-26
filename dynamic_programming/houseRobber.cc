@@ -1,5 +1,5 @@
 // Time: O(n)
-// Space: O(n)
+// Space: O(1) improved from O(n)
 class Solution {
 public:
     int rob(vector<int>& nums) {
@@ -9,17 +9,18 @@ public:
         }
         
         int n = int(nums.size());
-        vector<int> dp(n);
 
         // Base cases
-        dp[0] = nums[0];
-        dp[1] = max(nums[0], nums[1]);
+        int backTwo = nums[0];
+        int backOne = max(nums[0], nums[1]);
         
         for (int i = 2; i < n; i++) {
             // Recurrence relation
-            dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+            int temp = backOne;
+            backOne = max(backOne, backTwo + nums[i]);
+            backTwo = temp;
         }
         
-        return dp[n - 1];
+        return backOne;
     }
 };
