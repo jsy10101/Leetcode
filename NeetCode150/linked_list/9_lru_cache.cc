@@ -1,86 +1,96 @@
-// Time: O(1)
-// Space: O(n)
-// Algo intuition:
-//      create a hash map to store key value pairs to achieve O(1) avg time
-//      complexity for putting and getting in general use a maxCap variable to
-//      keep track of capacity of the hashMap next challenge -> identify which
-//      is the least recently used key what if we use a linked list, max size of
-//      linked list would be maxCap
+// Time: O(1) for each operation get and put
+// Space: O(capacity) for cache
+// Algo intuition
+//      - we need cache or hash map to store [key, node->val]
+//      - we will use doubly linked list to store the MRU and LRU elements in order to maintain order
+//      - design choice -> by having left and right pointers, we can remove and add elements in O(1) time
 
-// [00 <-> 01], newNode = 02
-// prev = right->prev = 00
-// prev->next = newNode (02)
-// newNode->prev = prev (01)
-// [00 <-> 02]
-// newNode->next = right
-// [00 <-> 02 -> 01]
-// right->prev = newNode
-// [00 <-> 02 <-> 01]
 class Node {
 public:
     int key;
     int val;
-    Node* prev;
     Node* next;
+    Node* prev;
 
-    Node(int k, int v) : key(k), val(v), prev(nullptr), next(nullptr) {}
+    Node(int k, int v) : key(k), val(v), next(nullptr), prev(nullptr) {}
 };
 
 class LRUCache {
-private:
-    int cap;
     unordered_map<int, Node*> cache;
+    int cap;
     Node* left;
     Node* right;
 
+    // remove any element from doubly linked list
     void remove(Node* node) {
         Node* prev = node->prev;
-        Node* nxt = node->next;
-        prev->next = nxt;
-        nxt->prev = prev;
+        Node* next = node->next;
+        prev->next = next;
+        next->prev = prev;
     }
 
+    // insert Most recently used on right
     void insert(Node* node) {
         Node* prev = right->prev;
-        prev->next = node;
-        node->prev = prev;
         node->next = right;
+        node->prev = prev;
         right->prev = node;
+        prev->next = node;
     }
 
 public:
     LRUCache(int capacity) {
-        cap = capacity;
-        cache.clear();
-        left = new Node(0, 0);
-        right = new Node(0, 0);
-        left->next = right;
-        right->prev = left;
+        this->cap = capacity;
+        this->cache.clear();
+        this->left = new Node(0, 0);
+        this->right = new Node(0, 0);
+        this->left->next = right;
+        this->right->prev = left;
     }
-
+    
     int get(int key) {
-        if (cache.find(key) != cache.end()) {
-            Node* node = cache[key];
+        if (this->cache.find(key) != this->cache.end()) {
+            Node* node = this->cache[key];
             remove(node);
             insert(node);
             return node->val;
         }
         return -1;
     }
-
+    
     void put(int key, int value) {
-        if (cache.find(key) != cache.end()) {
-            remove(cache[key]);
+        if (this->cache.find(key) != this->cache.end()) {
+            remove(this->cache[key]);
         }
         Node* newNode = new Node(key, value);
-        cache[key] = newNode;
+        this->cache[key] = newNode;
         insert(newNode);
 
-        if (cache.size() > cap) {
-            Node* lru = left->next;
+        if (cache.size() > this->cap) {
+            // get lru element and remove the LRU key, val from both doubly linked list and cache
+            Node* lru = this->left->next;
             remove(lru);
-            cache.erase(lru->key);
+            this->cache.erase(lru->key);
             delete lru;
         }
     }
+
+    ~LRUCache(){
+        cache.clear();
+        Node* cur = left->next;
+        while(cur != right){
+            Node* next = cur->next;
+            delete cur;
+            cur = next;
+        }
+        delete left;
+        delete right;
+    }
 };
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
