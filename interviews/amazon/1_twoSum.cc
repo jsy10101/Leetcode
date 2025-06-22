@@ -1,3 +1,6 @@
+// Time: O(n)
+// Space: O(n)
+// Topic: hashmap
 class Solution {
    public:
     vector<int> twoSum(vector<int>& nums, int target) {
