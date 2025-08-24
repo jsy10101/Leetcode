@@ -2,7 +2,7 @@
 
 # Function to check for unstaged changes and return their filenames
 get_unstaged_files() {
-  git status --short | grep '^[A(\ M)?]' | awk '{print $2}' | grep '\.cc$'
+  git status --short | grep '^[A(\ M)?]' | awk '{print $2}' | grep -E '\.(cc|py)$'
 }
 
 unstaged_files=$(get_unstaged_files)
