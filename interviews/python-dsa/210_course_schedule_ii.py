@@ -5,35 +5,42 @@ class Solution:
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
         """
         Algorithm intuition:
-            - dfs with cycle detection
-            - maintain an visit and cycle set
-            - append to output
+            - Topological sort with dfs
+            - maintain two hashsets (visit and cycle)
+            - if cycle is detected while running dfs, return false, else continue
+            - once dfs is done, remove from cycle set and add to visit set to avoid revisiting
         Time: O(V + E)
         Space: O(V + E)
         """
-        prereq = {c: [] for c in range(numCourses)}
+
+        preMap = {i: [] for i in range(numCourses)}
+
         for crs, pre in prerequisites:
-            prereq[crs].append(pre)
+            preMap[crs].append(pre)
 
-        output = []
         visit, cycle = set(), set()
+        output = []
 
-        def dfs(crs):
+        def dfs(crs) -> bool:
             if crs in cycle:
                 return False
             if crs in visit:
                 return True
 
             cycle.add(crs)
-            for pre in prereq[crs]:
+
+            for pre in preMap[crs]:
                 if dfs(pre) == False:
                     return False
+
             cycle.remove(crs)
             visit.add(crs)
             output.append(crs)
+
             return True
 
         for c in range(numCourses):
             if dfs(c) == False:
                 return []
+
         return output
