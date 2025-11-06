@@ -11,8 +11,8 @@ class Solution:
             - if val at middle is greater than target -> shrink right window -> right = mid -1
             - else shrink left window
             - if we exit out of the loop, return -1 (does not exist)
-        Time:
-        Space:
+        Time: O(log n)
+        Space: O(1)
         """
         left, right = 0, len(nums) - 1
 
